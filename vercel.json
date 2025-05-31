@@ -1,0 +1,22 @@
+{
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/home", "destination": "/home.html" },
+    { "source": "/login", "destination": "/login.html" },
+    { "source": "/sign-up", "destination": "/sign_up.html" },
+    { "source": "/not-found", "destination": "/not_found.html" },
+    { "source": "/verification-request", "destination": "/verification_request.html" },
+    { "source": "/verify-email", "destination": "/verify_email.html" },
+    { "source": "/password-reset-request", "destination": "/password_reset_request.html" },
+    { "source": "/password-reset", "destination": "/password_reset.html" },
+    { "source": "/about", "destination": "/about.html" },
+    { "source": "/privacy", "destination": "/privacy.html" },
+
+    { "source": "/posts/new", "destination": "/post_form.html" },
+    { "source": "/posts/:id/edit", "destination": "/post_form.html" },
+    { "source": "/posts/:id", "destination": "/post.html" },
+    { "source": "/posts", "destination": "/home.html" },
+    { "source": "/users/:username", "destination": "/user_profile.html" }
+
+  ]
+}

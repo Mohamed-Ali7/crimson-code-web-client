@@ -1,0 +1,45 @@
+.main-wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  font-family: Arial, sans-serif;
+  
+}
+
+.main-wrapper h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: #3f3f3f;
+}
+
+.main-wrapper h2 {
+  font-size: 1.6rem;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: #3f3f3f;
+}
+
+.main-wrapper p {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: #3f3f3f;
+  margin-bottom: 1rem;
+}
+
+.main-wrapper ul {
+  padding-left: 1.2rem;
+  color: #3f3f3f;
+}
+
+.main-wrapper li {
+  margin-bottom: 0.5rem;
+}
+
+.main-wrapper a {
+  color: #9E1B32;
+  text-decoration: none;
+}
+
+.main-wrapper a:hover {
+  text-decoration: underline;
+}

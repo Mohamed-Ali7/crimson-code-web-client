@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy</title>
+
+
+  <link rel="stylesheet" href="/static/styles/common.css" />
+  <link rel="stylesheet" href="/static/styles/privacy.css" />
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Roboto&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+
+  <header class="navbar">
+    <div class="logo">
+      <img src="/static/images/crimson_code_logo.png">
+    </div>
+
+
+
+    <i class="fas fa-bars menu-bar"></i>
+
+    <div class="navbar-buttons">
+      <ul class="nav-left-buttons">
+        <li class="home-btn">
+          <a href="/home">
+            <i class="fas fa-home"></i>
+            Home
+          </a>
+        </li>
+
+        <li class="categories-btn">
+
+          <div class="category-details">
+            <i class="fas fa-layer-group"></i>
+            <span>Categories</span>
+          </div>
+
+          <ul class="category-dropdown">
+
+          </ul>
+        </li>
+
+        <li class="view-search-btn">
+          <i class="fas fa-search"></i></i>
+          Search
+        </li>
+      </ul>
+
+
+
+      <div class="mobile-view-logout-btn">
+        <i class="fas fa-sign-out-alt fa-flip-horizontal"></i>
+        Logout
+      </div>
+
+
+
+      <ul class="nav-right-buttons">
+        <li class="login-signup-btn">
+          <button class="navbar-login-btn">
+            <i class="fas fa-sign-in-alt"></i>
+            Login
+          </button>
+
+          <button class="navbar-signup-btn">
+            <i class="bi bi-person-plus-fill"></i>
+            Sign Up
+          </button>
+        </li>
+
+      </ul>
+      <ul class="user-profile" style="display: none;">
+        <li class="publish-btn" style="display: none;">
+          <a href="/posts/new">
+            <i class="fas fa-pencil-alt"></i>
+            Publish
+          </a>
+        </li>
+
+        <li class="profile-details">
+          <div class="profile-pic">
+            <img src="" alt="" />
+          </div>
+          <span class="user-name"></span>
+        </li>
+        <li class="profile-dropdown">
+          <button class="view-profile">View Profile</button>
+          <button class="logout-btn">Logout</button>
+        </li>
+      </ul>
+    </div>
+    <div class="search-container" style="display: none;">
+
+      <div class="tag-dropdown">
+        <button id="tag-dropdown-btn">Tags <i class="bi bi-caret-down-fill"></i></button>
+        <div class="tag-dropdown-content">
+          <input type="text" class="tag-search" placeholder="Search tags..." />
+          <div class="tag-checkboxes">
+
+          </div>
+        </div>
+      </div>
+
+      <input class="main-search-input" type="search" placeholder="Search..." />
+      <i class="fas fa-search"></i>
+      <button class="close-search-btn">&times;</button>
+    </div>
+  </header>
+  
+  <div class="main-wrapper">
+    <h1>Privacy Policy</h1>
+
+    <p>
+      Your privacy is important to us. This privacy policy outlines how <strong>Crimson Code</strong> collects, uses, and protects your data when you visit our website.
+    </p>
+
+    <h2>What We Collect</h2>
+    <p>We may collect basic usage data through:</p>
+    <ul>
+      <li>Cookies (for session storage and preferences)</li>
+      <li>Form inputs (e.g., contact forms or comments)</li>
+    </ul>
+
+    <h2>How We Use Your Data</h2>
+    <ul>
+      <li>To provide and personalize your experience</li>
+      <li>To improve our content and services</li>
+      <li>To secure and maintain the platform</li>
+    </ul>
+
+    <h2>What We Don’t Do</h2>
+    <ul>
+      <li>We do not sell your data.</li>
+      <li>We do not share personally identifiable information with third parties.</li>
+    </ul>
+
+    <h2>Cookies</h2>
+    <p>
+      We use cookies to remember your preferences and help us improve performance. You can disable cookies in your browser settings.
+    </p>
+
+    <h2>Contact Us</h2>
+    <p>
+      If you have questions or concerns about this privacy policy, feel free to contact us at 
+      <a href="mailto:mohammed.ali17955@gmail.com">mohammed.ali17955@gmail.com</a>.
+    </p>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-about">
+        <h3>Crimson Code</h3>
+        <p>Your go-to blog for all things development. Clean code, clear concepts.</p>
+      </div>
+
+      <div class="footer-links">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="/home">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="/privacy">Privacy Policy</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-social">
+        <h4>Follow Us</h4>
+        <div class="social-icons">
+          <a href="https://github.com/Mohamed-Ali7" target="_blank"><i class="bi bi-github"></i></a>
+          <a href="https://www.linkedin.com/in/mohamed-ali7/" target="_blank"><i class="bi bi-linkedin"></i></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p></p>
+    </div>
+  </footer>
+</body>
+<script src="/api/env.js"></script>
+<script src="/static/scripts/main.js"></script>
+<script src="/static/scripts/common.js"></script>
+<script>
+  $(document).ready(async function () {
+    await window.initCommen();
+  });
+</script>
+</html>

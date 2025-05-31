@@ -1,0 +1,72 @@
+.verify-email-wrapper {
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.message-container {
+  max-width: 40rem;
+  text-align: center;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(233, 69, 96, 0.2);
+  background-color: #1a1a1a;
+}
+
+.verify-failure {
+  font-size: 1.2rem;
+  font-family: 'Poppins', sans-serif;
+  padding: 1rem;
+  display: none;
+  background-color: #9E1B32;
+  color: #f8d7da;
+  border: 1px solid #f44336;
+  border-radius: 8px;
+}
+
+.icon-failure {
+  font-size: 2rem;
+  color: #ffffff;
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.icon-failure::before {
+  position: absolute;
+  left: calc(50% - 1rem);
+}
+
+.send-verification-mail-btn {
+  width: 80%;
+  max-width: 20rem;
+  background-color: #9E1B32;
+  color: #F0F0F0;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 0.3rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 2rem;
+  display: none;
+}
+
+.send-verification-mail-btn:hover {
+  background-color: #E94560;
+}
+
+@media (max-width: 26.5rem) {
+
+  .message-container {
+    width: 100%;
+    max-width: 21rem;
+  }
+
+  .message-container p {
+    font-size: 0.9rem;
+  }
+}
