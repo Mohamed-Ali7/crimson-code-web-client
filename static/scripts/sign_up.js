@@ -119,8 +119,8 @@ $(document).ready(async function () {
     const firstNameInput = $(`.first-name-input`);
     const lastNameInput = $(`.last-name-input`);
 
-    if (!isEmailValid(emailInput) || !isPasswordValid(passwordInput) || !isNameValid(firstNameInput) ||
-    !isConfirmPasswordValid(confirmPasswordInput) || !isNameValid(lastNameInput)) {
+    if (!isEmailValid(emailInput) || !isPasswordValid(passwordInput) || !isNameValid(firstNameInput, `First Name`) ||
+    !isConfirmPasswordValid(confirmPasswordInput) || !isNameValid(lastNameInput, `Last Name`)) {
       return;
     }
 

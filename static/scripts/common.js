@@ -84,7 +84,7 @@ $(document).ready(async function () {
         const downArrow = $(`<i class="fa fa-caret-down"></i>`);
 
         if (user.profileImgUrl) {
-          profilePictureURL.attr(`src`, `${host}${user.profileImgUrl}`);
+          profilePictureURL.attr(`src`, `${user.profileImgUrl}`);
         } else {
           profilePictureURL.attr(`src`, '/static/images/navbar_default_profile_pic.png');
         }
@@ -343,6 +343,7 @@ $(document).ready(async function () {
         refreshToken: refreshToken,
       };
 
+      $(`#loading-spinner`).css(`display`, `flex`);
       $.ajax({
         method: `POST`,
         url: `${host}/api/auth/logout`,
@@ -357,6 +358,7 @@ $(document).ready(async function () {
           window.location = `/login`;
         },
         error: function (response) {
+          $(`#loading-spinner`).hide();
           if (response.responseJSON) {
             console.error(response.responseJSON.message);
           } else {

@@ -15,7 +15,7 @@ $(document).ready(async function () {
         const postImage = $(`<img class="post-image" alt="Post Thumbnail">`);
 
         if (post.imageUrl) {
-          postImage.attr(`src`, `${host}${post.imageUrl}`);
+          postImage.attr(`src`, `${post.imageUrl}`);
         } else {
           postImage.attr(`src`, '/static/images/default_post_thumbnail.png');
         }

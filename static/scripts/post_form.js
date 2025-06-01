@@ -127,6 +127,7 @@ $(document).ready(async function () {
       method: `GET`,
       url: `${host}/api/posts/${postId}`,
       success: function (post) {
+        const imagePreview = $(`#image-preview`);
 
         const cancelPostEditButton = $(`<button type="submit" class="cancel-post-edit-button">Cancel</button>`);
 
@@ -144,7 +145,7 @@ $(document).ready(async function () {
 
         if (post.imageUrl) {
 
-          imagePreview.html(`<img src="${host}${post.imageUrl}" alt="Image Preview" />`);
+          imagePreview.html(`<img src="${post.imageUrl}" alt="Image Preview" />`);
 
         } else {
           imagePreview.html(`<img src="/static/images/default_post_thumbnail.png" alt="Image Preview" />`);
@@ -153,14 +154,12 @@ $(document).ready(async function () {
         imagePreview.css(`padding`, 0);
         imagePreview.css(`border`, `none`)
 
-        imagePreview.on(`error`, function () {
+        $(`#image-preview img`).on(`error`, function () {
           const defaultSrc = '/static/images/default_post_thumbnail.png';
           if ($(this).attr('src') !== defaultSrc) {
             $(this).attr('src', defaultSrc);
           }
         });
-
-
 
         post.tags.forEach(tag => {
           selectedTags.add(tag.name.toLowerCase());

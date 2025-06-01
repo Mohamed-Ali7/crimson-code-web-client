@@ -7,11 +7,15 @@ $(document).ready(function () {
   $.ajaxSetup({
     statusCode: {
       401: function (xhr) {
+        $(`#loading-spinner`).css(`display`, `flex`);
+
         const refreshToken = Cookies.get('refresh_token');
 
         if (!refreshToken) {
           Cookies.remove(`access_token`, { path: '/' });
           if (!window.location.pathname.includes(`login`)) {
+            $(`#loading-spinner`).hide();
+
             Swal.fire({
               title: 'Session Expired',
               text: 'Your session has expired. Do you want to login again?',
@@ -34,7 +38,6 @@ $(document).ready(function () {
         pendingRequests.push(xhr._originalSettings);
         if (!isRefreshing) {
           isRefreshing = true;
-
           checkAuth(false).then((success) => {
             if (success) {
 
@@ -48,8 +51,10 @@ $(document).ready(function () {
                 });
                 pendingRequests = [];
               }, 100);
+              $(`#loading-spinner`).hide();
               isRefreshing = false;
             } else {
+              $(`#loading-spinner`).hide();
               localStorage.removeItem(`user`);
 
               pendingRequests = [];
@@ -77,10 +82,11 @@ $(document).ready(function () {
             }
           });
         }
+        $(`#loading-spinner`).hide();
       },
       403: function (xhr) {
         if (xhr.responseJSON) {
-          if (!window.location.pathname.contains(`login`)) {
+          if (!window.location.pathname.includes(`login`)) {
             alert(xhr.responseJSON.message);
           }
         }

@@ -36,11 +36,11 @@ $(document).ready(async function () {
         const postCard = $(`<div class="post-card"></div>`).data(`post-id`, post.id);
 
         const postImageContainer = $(`<div class="post-image-container"></div>`);
-        const postImage = $(`<img class="post-image" alt="Post Thumbnail">`);
+        const postImage = $(`<img class="post-image" alt="Post Thumbnail" loading="lazy">`);
 
         postImageContainer.append(postImage);
         if (post.imageUrl) {
-          postImage.attr(`src`, `${host}${post.imageUrl}`);
+          postImage.attr(`src`, `${post.imageUrl}`);
         } else {
           postImage.attr(`src`, '/static/images/default_post_thumbnail.png');
         }
@@ -60,7 +60,7 @@ $(document).ready(async function () {
         const postMeta = $(`<div class="post-meta"></div>`);
         const authorInfoContainer = $(`<div class="author-info-container"></div>`);
 
-        const authorAvatar = $(`<img class="author-avatar">`);
+        const authorAvatar = $(`<img class="author-avatar"> loading="lazy"`);
         const authorInfo = $(`<div class="author-info"></div>`);
         const authorName = $(`<span class="author-name"></span>`)
         const postDate = $(`<span class="post-date"></span>`).text(formatDate(post.createdAt));
@@ -70,7 +70,7 @@ $(document).ready(async function () {
         authorInfoContainer.data(`user-id`, user.publicId);
 
         if (user.profileImgUrl) {
-          authorAvatar.attr(`src`, `${host}${user.profileImgUrl}`);
+          authorAvatar.attr(`src`, `${user.profileImgUrl}`);
         } else {
           authorAvatar.attr(`src`, '/static/images/default_profile_pic.png');
         }

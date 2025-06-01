@@ -98,7 +98,7 @@ $(document).ready(async function () {
       const userAvatar = $('.post-author-avatar');
 
       if (user.profileImgUrl) {
-        userAvatar.attr(`src`, `${host}${user.profileImgUrl}`);
+        userAvatar.attr(`src`, `${user.profileImgUrl}`);
       } else {
         userAvatar.attr(`src`, '/static/images/default_profile_pic.png');
       }
@@ -119,7 +119,7 @@ $(document).ready(async function () {
       postCategory.data(`category-name`, post.category.name.toLowerCase());
 
       if (post.imageUrl) {
-        $('.post-image').attr('src', `${host}${post.imageUrl}`);
+        $('.post-image').attr('src', `${post.imageUrl}`);
       } else {
         $('.post-image').attr('src', '/static/images/default_post_thumbnail.png');
       }
@@ -259,7 +259,7 @@ $(document).ready(async function () {
     commentAuthorAvatar.data(`user-id`, commentAuthor.publicId)
 
     if (commentAuthor.profileImgUrl) {
-      commentAuthorAvatar.attr(`src`, `${host}${commentAuthor.profileImgUrl}`);
+      commentAuthorAvatar.attr(`src`, `${commentAuthor.profileImgUrl}`);
     } else {
       commentAuthorAvatar.attr(`src`, '/static/images/default_profile_pic.png');
     }
@@ -301,6 +301,10 @@ $(document).ready(async function () {
       return;
     }
 
+    $(`.submit-comment`).prop(`disabled`, true);
+
+    $(`#loading-spinner`).show();
+
     $.ajax({
       method: `POST`,
       url: `${host}/api/posts/${postId}/comments`,
@@ -318,6 +322,10 @@ $(document).ready(async function () {
         } else {
           console.error(`An error occurred while sending the request, please try again later`)
         }
+      },
+      complete: function () {
+        $(`.submit-comment`).prop(`disabled`, false);
+        $(`#loading-spinner`).hide();
       }
     })
 
@@ -463,12 +471,22 @@ $(document).ready(async function () {
       scrollbarPadding: false
     }).then((result) => {
       if (result.isConfirmed) {
+        $(`.delete-comment-button`).prop(`disabled`, true);
+        $(`#loading-spinner`).show();
         $.ajax({
           method: `DELETE`,
           url: `${host}/api/posts/${postId}/comments/${currentCommentId}`,
           headers: { Authorization: 'Bearer ' + accessToken },
           success: function (data) {
             currentComment.remove();
+            Swal.fire({
+              icon: 'success',
+              title: 'Deleted!',
+              text: 'The comment has been removed.',
+              timer: 1100,
+              showConfirmButton: false,
+              scrollbarPadding: false
+            });
           },
           error: function (response) {
             if (response.responseJSON) {
@@ -476,16 +494,11 @@ $(document).ready(async function () {
             } else {
               console.error(`An error occurred while sending the request, please try again later`)
             }
+          },
+          complete: function () {
+            $(`.delete-comment-button`).prop(`disabled`, false);
+            $(`#loading-spinner`).hide();
           }
-        });
-
-        Swal.fire({
-          icon: 'success',
-          title: 'Deleted!',
-          text: 'The comment has been removed.',
-          timer: 1100,
-          showConfirmButton: false,
-          scrollbarPadding: false
         });
       }
     });

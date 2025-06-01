@@ -55,7 +55,7 @@ $(document).ready(async function () {
       const currentAvatar = $(`#current-avatar`);
 
       if (user.profileImgUrl) {
-        profileAvatarImage.attr(`src`, `${host}${user.profileImgUrl}`);
+        profileAvatarImage.attr(`src`, `${user.profileImgUrl}`);
       } else {
         profileAvatarImage.attr(`src`, '/static/images/default_profile_pic.png');
       }
@@ -473,6 +473,7 @@ $(document).ready(async function () {
     }).then((result) => {
       if (result.isConfirmed) {
         $(`#loading-spinner`).show();
+        $(this).prop(`disabled`, true);
         $.ajax({
           method: 'DELETE',
           url: `${host}/api/users/${userProfileId}`,
@@ -485,19 +486,20 @@ $(document).ready(async function () {
               timer: 1500,
               showConfirmButton: false,
               scrollbarPadding: false
-            }).then(() => {
-              if (!isAdmin) {
-                Cookies.remove(`access_token`);
-                Cookies.remove(`refresh_token`);
-                localStorage.removeItem(`user`);
-                window.location = '/login';
-              } else {
-                window.location = '/home';
-              }
             });
+
+            if (!isAdmin) {
+              Cookies.remove(`access_token`);
+              Cookies.remove(`refresh_token`);
+              localStorage.removeItem(`user`);
+              window.location = '/login';
+            } else {
+              window.location = '/home';
+            }
 
           },
           error: function (response) {
+            $(this).prop(`disabled`, false);
             if (response.responseJSON) {
               console.error(response.responseJSON.message);
             } else {
