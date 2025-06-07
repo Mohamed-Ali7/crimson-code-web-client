@@ -18,6 +18,7 @@ $(document).ready(async function () {
   if (!isUserLoggedIn) {
     $(`#post-form`).hide();
     $(`.login-prompt`).show();
+    $(`#loading-spinner`).hide();
     return;
   }
 

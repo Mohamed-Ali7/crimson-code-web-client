@@ -1,3 +1,5 @@
+const favIcon = $(`<link rel="icon" href="/static/images/favicon.png" type="image/png">`);
+$(`head`).append(favIcon);
 $(document).ready(async function () {
 
     const host = window.API_URL;
