@@ -617,13 +617,13 @@ $(document).ready(async function () {
           const userImg = $(`<img class="${userType}-user-img">`);
 
           if (user.profileImgUrl) {
-            userImg.attr(`src`, `${host}${user.profileImgUrl}`);
+            userImg.attr(`src`, `${user.profileImgUrl}`);
           } else {
-            userImg.attr(`src`, '../static/images/default_profile_pic.png');
+            userImg.attr(`src`, '/static/images/default_profile_pic.png');
           }
 
           userImg.on(`error`, function () {
-            const defaultSrc = '../static/images/default_profile_pic.png';
+            const defaultSrc = '/static/images/default_profile_pic.png';
             if ($(this).attr('src') !== defaultSrc) {
               userImg.attr('src', defaultSrc);
             }
