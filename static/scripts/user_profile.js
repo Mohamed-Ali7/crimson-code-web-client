@@ -465,6 +465,7 @@ $(document).ready(async function () {
       }
     }).finally(() => {
       $(`#loading-spinner`).hide();
+      $(`.save-btn`).prop(`disabled`, false);
     });
     localStorage.removeItem(`user`);
 
