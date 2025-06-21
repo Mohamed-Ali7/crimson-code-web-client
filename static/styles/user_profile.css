@@ -348,9 +348,9 @@
   background: #fff;
   padding: 2rem;
   border-radius: 1rem;
-  width: 40%;
-  min-width: 28.2rem;
-  max-height: 35rem;
+  width: 33.8rem;
+  max-width: 67.6rem;
+  max-height: 85%;
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
   animation: fadeIn 0.5s ease;
   transition: width 0.3s ease;
@@ -614,6 +614,16 @@ body.swal2-shown {
     background-color: transparent;
     padding: 0;
   }
+
+  .modal-content {
+    max-width: 33.8rem;
+  }
+
+  .modal-actions button,
+  .modal-actions .delete-account-btn {
+    padding: 0.6rem 0.5rem;
+    font-size: 0.82rem;
+  }
 }
 
 @media (max-width: 43.75rem) {
@@ -697,8 +707,10 @@ body.swal2-shown {
     padding: 1rem;
   }
 
-  .modal-actions button {
+  .modal-actions button,
+  .modal-actions .delete-account-btn {
     padding: 0.6rem 0.5rem;
+    font-size: 0.82rem;
   }
 
   .read-more-btn {
