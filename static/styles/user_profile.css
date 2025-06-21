@@ -67,7 +67,6 @@
 
 .profile-header .user-info button,
 .delete-account-btn {
-  width: 100%;
   margin-bottom: 0.3rem;
   font-size: 1rem;
   padding: 0.5rem 1rem;
@@ -647,6 +646,7 @@ body.swal2-shown {
 
   .profile-header .user-info button {
     width: 100%;
+    max-width: 15rem;
   }
 
   .tab {

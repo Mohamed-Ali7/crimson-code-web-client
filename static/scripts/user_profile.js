@@ -667,12 +667,12 @@ $(document).ready(async function () {
 
   $(`.profile-content`).on(`click`, `.follower-user-meta`, function () {
     const profileId = $(this).closest(`.follower-user-container`).data(`user-id`)
-    window.location = `user_profile.html?id=${profileId}`;
+    window.location = `/users/${profileId}`;
   });
 
   $(`.profile-content`).on(`click`, `.following-user-meta`, function () {
     const profileId = $(this).closest(`.following-user-container`).data(`user-id`)
-    window.location = `user_profile.html?id=${profileId}`;
+    window.location = `/users/${profileId}`;
   });
 
   function isNameValid(nameInput, type) {
