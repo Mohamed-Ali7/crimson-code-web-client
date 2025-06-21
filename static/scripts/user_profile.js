@@ -77,27 +77,41 @@ $(document).ready(async function () {
 
       $(`.joined-date`).text(`Joined: ${joinedDate}`);
 
-      const editProfileBtn = $(`<button class="edit-profile-btn">Edit Profile</button>`);
+      const userInfoButton = $(`.profile-header .user-info button`);
 
-      if (currentUserPublicId === userProfileId) {
-        userInfo.append(editProfileBtn);
+      if (currentUserPublicId) {
+        userInfoButton.show();
+        if (currentUserPublicId === userProfileId) {
+          userInfoButton.text(`Edit Profile`).addClass(`edit-profile-btn`);
 
-        if (isAdmin) {
-          $(`.delete-account-btn`).remove();
+          if (isAdmin) {
+            $(`.delete-account-btn`).remove();
+          }
+
+          $(`#first-name`).val(user.firstName);
+          $(`#last-name`).val(user.lastName);
+        } else {
+          if (isAdmin) {
+            userInfo.append($(`.delete-account-btn`).css(`margin`, `-0.8rem 0 0 0`));
+          }
+          if (user.isFollowing) {
+            userInfoButton.addClass(`unfollow-btn`).text(`Unfollow`);
+            userInfoButton.data(`user-id`, user.publicId)
+          } else {
+            userInfoButton.addClass(`follow-btn`).text(`Follow`);
+            userInfoButton.data(`user-id`, user.publicId)
+          }
+
         }
 
-        $(`#first-name`).val(user.firstName);
-        $(`#last-name`).val(user.lastName);
-
-      } else if (isAdmin) {
-        userInfo.append($(`.delete-account-btn`));
-      }
-      else {
-        $(`.user-profile-name`).css(`margin-bottom`, `0.8rem`);
+      } else {
+        $(`.user-profile-name`).css(`margin-bottom`, `1rem`);
+        $(`.user-meta`).append($(`.follow-meta`).css(`margin-top`, `0.3rem`)).next(`div`).remove();
       }
 
       laodUserPosts(1);
-
+      loadUserFollowers(1);
+      loadUserFollowing(1)
     },
     error: function (response) {
       $(`#loading-spinner`).hide();
@@ -125,7 +139,6 @@ $(document).ready(async function () {
         const postTabContent = $(`.post-tab-content`).empty();
 
         $(`.posts-count`).text(`Posts: ${postPage.totalElements}`);
-
         const posts = postPage.content;
 
         posts.forEach(post => {
@@ -151,9 +164,9 @@ $(document).ready(async function () {
 
         });
 
-        const paginationControls = $(`<div id="pagination" class="pagination-controls"></div>`)
+        const paginationControls = $(`<div id="pagination" class=" pagination-controls posts-pagination"></div>`)
         postTabContent.append(paginationControls);
-        renderPagination(postPage.pageNumber, postPage.totalPages);
+        renderPagination(postPage.pageNumber, postPage.totalPages, paginationControls);
       },
       error: function (response) {
         if (response.responseJSON) {
@@ -168,16 +181,22 @@ $(document).ready(async function () {
     });
   }
 
-  $(document).on(`click`, `.pagination-controls button`, function () {
+  $(document).on(`click`, `.posts-pagination button`, function () {
     laodUserPosts($(this).text());
   });
 
-  function renderPagination(currentPage, totalPages) {
+  $(document).on(`click`, `.followers-pagination button`, function () {
+    loadUserFollowers($(this).text());
+  });
+
+  $(document).on(`click`, `.following-pagination button`, function () {
+    loadUserFollowing($(this).text());
+  });
+
+  function renderPagination(currentPage, totalPages, paginationControls) {
 
     const totalButtons = 5;
     const pages = [];
-
-    const paginationControls = $(`.pagination-controls`);
 
     paginationControls.empty();
 
@@ -512,6 +531,148 @@ $(document).ready(async function () {
         });
       }
     });
+  });
+
+  $(`.tab`).on(`click`, function (e) {
+
+    $(`.tab`).removeClass(`active`);
+    $(this).addClass(`active`);
+
+    const activeTabContent = $(this).data(`tab`);
+
+    $(`.profile-content > div`).hide();
+
+    $(`#${activeTabContent}`).show();
+  });
+
+  $(`.profile-container`).on(`click`, `.unfollow-btn`, function () {
+    followOrUnfollowUser(`unfollow`, `DELETE`, $(this));
+  });
+
+  $(`.profile-container`).on(`click`, `.follow-btn`, function () {
+    followOrUnfollowUser(`follow`, `POST`, $(this));
+  });
+
+  function followOrUnfollowUser(action, method, btn) {
+
+    btn.prop(`disabled`, true);
+    btn.html($(`<div class="spinner"></div>`));
+
+    $.ajax({
+      method: method,
+      url: `${host}/api/users/${decodeURIComponent(btn.data(`user-id`))}/follow`,
+      headers: { Authorization: 'Bearer ' + accessToken },
+      success: function (data) {
+        if (action === `follow`) {
+          btn.html(`Unfollow`).removeClass(`follow-btn`).addClass(`unfollow-btn`);
+        } else {
+          btn.html(`Follow`).removeClass(`unfollow-btn`).addClass(`follow-btn`);
+        }
+      },
+      error: function (response) {
+
+        btn.html(action);
+
+        if (response.responseJSON) {
+          console.error(response.responseJSON.message);
+        } else {
+          console.error(`An error occurred while sending the request, please try again later`)
+        }
+      },
+      complete: function () {
+        btn.prop(`disabled`, false);
+      }
+    });
+  }
+
+  function loadUserFollowers(page) {
+    loadFollowersOrFollowing(page, `followers`);
+  }
+
+  function loadUserFollowing(page) {
+    loadFollowersOrFollowing(page, `following`);
+  }
+
+  function loadFollowersOrFollowing(page, type) {
+
+    const userType = type === `followers` ? `follower` : `following`;
+    $.ajax({
+      url: `${host}/api/users/${decodeURIComponent(userProfileId)}/${type}?page=${page}`,
+      method: `GET`,
+      success: function (usersPage) {
+        const users = usersPage.content;
+
+        if (type === `following`) {
+          $(`.following-count`).text(`Following: ${usersPage.totalElements}`);
+        } else {
+          $(`.followers-count`).text(`Followers: ${usersPage.totalElements}`);
+        }
+
+        const tabContent = $(`#${type}`).empty();
+        for (const user of users) {
+
+          const userContainer = $(`<div class="${userType}-user-container"></div>`);
+          const userMeta = $(`<div class="${userType}-user-meta"></div>`);
+          const userImgContainer = $(`<div class="${userType}-user-img-container"></div>`);
+          const userImg = $(`<img class="${userType}-user-img">`);
+
+          if (user.profileImgUrl) {
+            userImg.attr(`src`, `${host}${user.profileImgUrl}`);
+          } else {
+            userImg.attr(`src`, '../static/images/default_profile_pic.png');
+          }
+
+          userImg.on(`error`, function () {
+            const defaultSrc = '../static/images/default_profile_pic.png';
+            if ($(this).attr('src') !== defaultSrc) {
+              userImg.attr('src', defaultSrc);
+            }
+          });
+
+          const userFullName = $(`<span>${user.firstName} ${user.lastName}</span>`);
+
+          userImgContainer.append(userImg);
+          userMeta.append(userImgContainer, userFullName);
+
+          const followUnfollowBtn = $(`<button></button>`);
+
+          if (user.isFollowing || (currentUserPublicId === userProfileId && type === `following`)) {
+            followUnfollowBtn.text(`Unfollow`).addClass(`unfollow-btn`);
+          } else {
+            followUnfollowBtn.text(`Follow`).addClass(`follow-btn`);
+          }
+          userContainer.append(userMeta);
+          if (currentUserPublicId && user.publicId !== currentUserPublicId) {
+            followUnfollowBtn.data(`user-id`, user.publicId);
+            userContainer.append(followUnfollowBtn);
+          }
+
+          userContainer.data(`user-id`, user.publicId);
+          tabContent.append(userContainer);
+
+        }
+        const paginationControls = $(`<div class="pagination-controls ${type}-pagination"></div>`)
+        tabContent.append(paginationControls);
+        renderPagination(usersPage.pageNumber, usersPage.totalPages, paginationControls);
+      },
+      error: function (response) {
+        if (response.responseJSON) {
+          console.error(response.responseJSON.message);
+        } else {
+          console.error(`An error occurred while sending the request, please try again later`)
+        }
+      }
+    });
+  }
+
+  $(`.profile-content`).on(`click`, `.follower-user-meta`, function () {
+    const profileId = $(this).closest(`.follower-user-container`).data(`user-id`)
+    window.location = `user_profile.html?id=${profileId}`;
+  });
+
+  $(`.profile-content`).on(`click`, `.following-user-meta`, function () {
+    const profileId = $(this).closest(`.following-user-container`).data(`user-id`)
+    window.location = `user_profile.html?id=${profileId}`;
   });
 
   function isNameValid(nameInput, type) {

@@ -565,6 +565,14 @@ body {
     display: inline-block;
   }
 
+  .profile-details .user-name {
+    max-width: 6rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
   .user-name .fa {
     display: none;
   }

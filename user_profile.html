@@ -130,28 +130,36 @@
     <div class="profile-container">
       <div class="profile-header">
         <div class="avatar">
-          <img class="avatar-image" alt="User Avatar">
+          <div class="avatar-img-container">
+            <img class="avatar-image" alt="User Avatar">
+          </div>
         </div>
         <div class="user-info">
           <div class="user-meta">
             <h1 class="user-profile-name"></h1>
-            <span class="joined-date"></span>
-            <span class="posts-count"></span>
+            <span class="joined-date">Joined: </span>
+            <span class="posts-count">Posts: 0</span>
+            <div class="follow-meta">
+              <span class="followers-count">Followers: 0</span>
+              <span class="following-count">Following: 0</span>
+            </div>
           </div>
-
+          <div>
+            <button style="display: none;"></button>
+          </div>
         </div>
       </div>
 
       <div class="profile-nav">
-        <button class="tab active">Published Posts</button>
+        <button class="tab active" data-tab="posts">Published Posts</button>
+        <button class="tab" data-tab="followers">Followers</button>
+        <button class="tab" data-tab="following">Following</button>
       </div>
 
       <div class="profile-content">
-        <div id="posts" class="post-tab-content">
-
-
-        </div>
-
+        <div id="posts" class="post-tab-content"></div>
+        <div id="followers" class="followers-tab-content" style="display: none;"></div>
+        <div id="following" class="following-tab-content" style="display: none;"></div>
       </div>
 
       <div id="edit-profile-modal" class="modal hidden">
