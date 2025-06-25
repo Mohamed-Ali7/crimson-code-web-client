@@ -14,7 +14,7 @@ $(document).ready(async function () {
 
   if (searchParam || searchTagsParam) {
     const encodedSearchParam = encodeURIComponent(searchParam);
-    const encodedSearchTagsParam =  encodeURIComponent(searchTagsParam)
+    const encodedSearchTagsParam = encodeURIComponent(searchTagsParam);
     requestURL = `${host}/api/posts/search?query=${(encodedSearchParam)}&tags=${encodedSearchTagsParam}&`;
   } else if (tagParam) {
     requestURL = `${host}/api/tags/${encodeURIComponent(tagParam)}/posts?`;
@@ -26,6 +26,20 @@ $(document).ready(async function () {
   const size = urlParams.get(`size`) ? urlParams.get(`size`) : 9;
   const sortBy = urlParams.get(`sort_by`) ? urlParams.get(`sort_by`) : `createdAt`;
   const sortDir = urlParams.get(`sort_dir`) ? urlParams.get(`sort_dir`) : `desc`;
+
+  function extractExcerpt(html, limit = 200) {
+    const temp = document.createElement('div');
+    temp.innerHTML = html;
+
+    temp.querySelectorAll('img, video, audio, iframe, embed, object, source').forEach(el => el.remove());
+
+    temp.querySelectorAll('p, div, h1, h2, h3, li, blockquote, pre').forEach(el => {
+      el.insertAdjacentText('afterend', ' ');
+    });
+
+    const text = temp.textContent || temp.innerText || '';
+    return text.length > limit ? text.slice(0, limit) : text;
+  }
 
   $.ajax({
     method: `GET`,
@@ -55,7 +69,7 @@ $(document).ready(async function () {
         const postContent = $(`<div class="post-content"></div>`);
 
         const postTitle = $(`<h2 class="post-title"></h2>`).text(post.title);
-        const postExcerpt = $(`<p class="post-excerpt"></p>`).text(post.content);
+        const postExcerpt = $(`<p class="post-excerpt"></p>`).text(extractExcerpt(post.content));
 
         const postMeta = $(`<div class="post-meta"></div>`);
         const authorInfoContainer = $(`<div class="author-info-container"></div>`);

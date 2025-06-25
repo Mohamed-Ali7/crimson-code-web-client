@@ -55,7 +55,7 @@ $(document).ready(function () {
               isRefreshing = false;
             } else {
               $(`#loading-spinner`).hide();
-              localStorage.removeItem(`user`);
+              sessionStorage.removeItem(`user`);
 
               pendingRequests = [];
 
@@ -139,7 +139,7 @@ $(document).ready(function () {
 
       return true;
     }).catch(() => {
-      localStorage.removeItem(`user`);
+      sessionStorage.removeItem(`user`);
       Cookies.remove('refresh_token', { path: '/' });
       return false;
     });

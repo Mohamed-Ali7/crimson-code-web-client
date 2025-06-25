@@ -131,6 +131,20 @@ $(document).ready(async function () {
     window.open($(this).attr('src'), '_blank');
   });
 
+  function extractExcerpt(html, limit = 200) {
+    const temp = document.createElement('div');
+    temp.innerHTML = html;
+
+    temp.querySelectorAll('img, video, audio, iframe, embed, object, source').forEach(el => el.remove());
+
+    temp.querySelectorAll('p, div, h1, h2, h3, li, blockquote, pre').forEach(el => {
+      el.insertAdjacentText('afterend', ' ');
+    });
+
+    const text = temp.textContent || temp.innerText || '';
+    return text.length > limit ? text.slice(0, limit).trim() : text.trim();
+  }
+
   function laodUserPosts(page) {
     $.ajax({
       method: `GET`,
@@ -144,7 +158,7 @@ $(document).ready(async function () {
         posts.forEach(post => {
           const postCard = $(`<div class="post-card"></div>`);
           const postTitle = $(`<h2 class="post-title"></h2>`).text(post.title);
-          const postExcerpt = $(`<p class="post-excerpt"></p>`).text(post.content);
+          const postExcerpt = $(`<p class="post-excerpt"></p>`).text(extractExcerpt(post.content));
 
           const postCardBottom = $(`<div class="post-card-bottom"></div>`);
           const postPublishDate = $(`<span class="post-publish-date"></span>`)
@@ -468,7 +482,7 @@ $(document).ready(async function () {
       $(`#loading-spinner`).hide();
       $(`.save-btn`).prop(`disabled`, false);
     });
-    localStorage.removeItem(`user`);
+    sessionStorage.removeItem(`user`);
 
   });
 
@@ -512,7 +526,7 @@ $(document).ready(async function () {
             if (!isAdmin) {
               Cookies.remove(`access_token`);
               Cookies.remove(`refresh_token`);
-              localStorage.removeItem(`user`);
+              sessionStorage.removeItem(`user`);
               window.location = '/login';
             } else {
               window.location = '/home';

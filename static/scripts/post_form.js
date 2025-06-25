@@ -30,6 +30,139 @@ $(document).ready(async function () {
     apiRequestMethod = `PUT`;
   }
 
+  function validateQuillContent(quill) {
+
+    const forbidList = ['IMG', 'VIDEO', 'AUDIO', 'IFRAME', 'EMBED', 'OBJECT', 'SOURCE', 'PICTURE'];
+    forbidList.forEach(el => {
+      quill.clipboard.addMatcher(el, (node, delta) => {
+        const Delta = Quill.import('delta')
+        return new Delta().insert('')
+      });
+    });
+
+    quill.root.addEventListener('drop', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }, true);
+
+    quill.root.addEventListener('dragover', function (e) {
+      e.preventDefault();
+    }, true);
+  }
+
+  const quill = new Quill('#editor', {
+    theme: 'bubble',
+    placeholder: 'Write your post here...',
+    modules: {
+      syntax: true,
+      toolbar: [
+        [{ header: [1, 2, 3, false] }],
+        [{ 'background': ['#f7ed94', '#b4e6ab', '#f28b82', false] }],
+        ['bold'], ['italic'], ['underline'], ['code-block'],
+        ['strike'], ['blockquote'],
+        [{ list: 'ordered' }], [{ list: 'bullet' }],
+        ['link']
+      ]
+    }
+  });
+
+  $(`.ql-editor`).addClass(`post-content`);
+
+  const editor = $(`.ql-editor`);
+
+  validateQuillContent(quill);
+
+  let isFormDirty = false;
+  let isProgrammaticChange = isEditMode;
+  let isOriginalPostTitle = isEditMode;
+  let isNavigatingInternally = false;
+  let isSafeButton = false;
+
+  if (window.innerWidth <= 900) {
+
+    editor.on('keyup', () => {
+      const isEmpty = editor.html() === `<p><br></p>`
+      if (!isEmpty) {
+        markFormAsDirty();
+      }
+      editor.toggleClass('ql-blank', isEmpty);
+    });
+  }
+
+  function markFormAsDirty() {
+    $(`.navbar button`).attr(`data-safety-check`, true);
+    $(`.navbar .profile-details`).attr(`data-safety-check`, true);
+    isFormDirty = true;
+  }
+  $(`#post-category`).on(`change`, function () {
+    markFormAsDirty();
+  });
+
+  quill.on('text-change', () => {
+    if (isProgrammaticChange) {
+      isProgrammaticChange = false;
+      return;
+    }
+    markFormAsDirty();
+  });
+
+  $(`.navbar`).on(`click`, `button`, formLeavingAlert);
+  $(`a`).on(`click`, formLeavingAlert);
+  $(`.profile-details`).on(`click`, formLeavingAlert);
+
+
+  $(`.submit-section`).on(`click`, `button`, function () {
+    isSafeButton = true;
+  });
+
+  window.addEventListener('beforeunload', function (e) {
+    if (isFormDirty && !isNavigatingInternally && !isSafeButton) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  });
+
+  function formLeavingAlert(e) {
+    let target = e.target.closest(`a, button`);
+
+    if (!target) {
+      target = e.target.closest(`.profile-details`);
+      if (target && window.innerWidth > 900) {
+        return;
+      }
+    }
+
+    if (!target || !isFormDirty || target.closest(`.footer-social`)) {
+      return;
+    }
+
+    e.preventDefault();
+    const href = target.getAttribute('href');
+    Swal.fire({
+      title: 'Unsaved changes!',
+      text: 'Are you sure you want to leave without saving?',
+      icon: 'warning',
+      showCancelButton: true,
+      scrollbarPadding: false,
+      confirmButtonText: 'Yes, leave',
+      cancelButtonText: 'Stay here'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        isFormDirty = false;
+        isNavigatingInternally = true;
+
+        target.removeAttribute(`data-safety-check`);
+        if (href) {
+          window.location.href = href;
+        } else {
+          requestAnimationFrame(() => {
+            target.click();
+          });
+        }
+      }
+    });
+  }
+
   const existedTags = new Set();
   const selectedTags = new Set();
 
@@ -85,7 +218,7 @@ $(document).ready(async function () {
     $(`.post-category-dropdown`).hide();
     $(`.post-category-container`).removeClass(`expand`)
 
-    $(`#post-category`).val($(this).text());
+    $(`#post-category`).val($(this).text()).trigger(`change`);
     clearErrors($(`#post-category`));
     $(`#post-category`).data(`category-id`, $(this).data(`category-id`));
 
@@ -137,8 +270,7 @@ $(document).ready(async function () {
 
         $('#post-title').val(post.title);
         $(`#post-title`).trigger(`input`)
-        $('#post-content').val(post.content)
-        $(`#post-content`).trigger(`input`);
+        $(`.post-content`).html(post.content);
 
         const postCategory = $('#post-category');
         postCategory.val(post.category.name);
@@ -195,9 +327,9 @@ $(document).ready(async function () {
     });
   } else {
     $(`#loading-spinner`).hide();
-      loadTags().then(tagList => {
-        tagList.forEach(tag => addExistedTags(tag));
-      });
+    loadTags().then(tagList => {
+      tagList.forEach(tag => addExistedTags(tag));
+    });
   }
 
   $(document).on(`click`, `.save-post-update-button`, function (e) {
@@ -214,6 +346,8 @@ $(document).ready(async function () {
     }).then((result) => {
       if (result.isConfirmed) {
         $(`#post-form`).submit();
+      } else {
+        isSafeButton = false;
       }
     });
 
@@ -234,6 +368,8 @@ $(document).ready(async function () {
     }).then((result) => {
       if (result.isConfirmed) {
         window.location.href = `/posts/${postId}`;
+      } else {
+        isSafeButton = false;
       }
     });
   });
@@ -291,6 +427,8 @@ $(document).ready(async function () {
 
         $('#selected-tags').append(tagElement);
         $(this).val(``);
+
+        markFormAsDirty();
       }
     }
   });
@@ -302,13 +440,14 @@ $(document).ready(async function () {
 
     $(this).append(removeTagButton);
 
-    $('#selected-tags').append($(this))
+    $('#selected-tags').append($(this));
 
-    selectedTags.add(tagValue)
+    selectedTags.add(tagValue);
+
+    markFormAsDirty();
   });
 
   $(`#selected-tags`).on(`click`, `.existed-tag-item .remove-tag`, function () {
-
 
     const existedTag = $(this).closest(`.existed-tag-item`);
     $(this).remove();
@@ -317,7 +456,9 @@ $(document).ready(async function () {
 
     $('#existed-post-tags').prepend(existedTag);
 
-    selectedTags.delete(tagValue)
+    selectedTags.delete(tagValue);
+
+    markFormAsDirty();
   });
 
 
@@ -377,13 +518,15 @@ $(document).ready(async function () {
 
   $(`#post-title`).on('input', function () {
     resizeTextarea(this);
+
+    if (!isOriginalPostTitle) {
+      markFormAsDirty();
+    } else {
+      isOriginalPostTitle = false;
+    }
   });
 
-  $(`#post-content`).on('input', function () {
-    resizeTextarea(this);
-  });
-
-  const autoResizeTextareas = $('#post-title, #post-content');
+  const autoResizeTextareas = $('#post-title');
 
   $(window).on('resize', function () {
     autoResizeTextareas.each(function () {
@@ -405,7 +548,7 @@ $(document).ready(async function () {
     e.preventDefault();
 
     const postTitleInput = $(`#post-title`);
-    const postContentInput = $(`#post-content`);
+    const postContentInput = $(`.ql-editor`);
     const postCateogryInput = $(`#post-category`);
 
     if (!isPostTitleValid(postTitleInput) || !isPostContentValid(postContentInput) ||
@@ -419,11 +562,17 @@ $(document).ready(async function () {
 
     selectedTags.forEach(tag => {
       tags.push(tag);
-    })
+    });
+
+    $(`.ql-code-block-container select.ql-ui`).remove();
+
+    const cleanHtmlContent = DOMPurify.sanitize(postContentInput.html(), {
+      FORBID_TAGS: ['script', 'iframe', 'video', 'audio', 'embed', 'object', 'img', 'source']
+    });
 
     const postData = {
       title: postTitleInput.val().trim(),
-      content: postContentInput.val().trim(),
+      content: cleanHtmlContent,
       categoryId: postCateogryInput.data(`category-id`),
       tags: tags,
     }
@@ -475,10 +624,16 @@ $(document).ready(async function () {
     inputField.addClass('error');
     inputField.closest(`.form-group`).next('.error-message').css(`visibility`, `visible`).text(message);
 
-    const element = document.querySelector(`#${inputField.attr('id')}`);
+    let element = document.querySelector(`#${inputField.attr('id')}`);
+    if (!element && inputField.hasClass(`ql-editor`)) {
+      element = document.querySelector(`.ql-editor`);
+    }
+
     const y = element.getBoundingClientRect().top + window.pageYOffset - 50;
 
-    window.scrollTo({ top: y, behavior: 'smooth' });
+    setTimeout(() => {
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }, 200);
   }
 
   function clearErrors(inputField) {
@@ -503,7 +658,7 @@ $(document).ready(async function () {
   function isPostContentValid(contentInput) {
     clearErrors(contentInput);
 
-    if (contentInput.val().trim() === '') {
+    if (contentInput.html().trim() === '<p><br></p>') {
       showError(contentInput, `Post Content cannot be empty.`);
       return false;
     }

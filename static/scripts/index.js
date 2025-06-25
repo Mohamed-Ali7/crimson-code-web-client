@@ -30,7 +30,7 @@ $(document).ready(async function () {
         const postContent = $(`<div class="post-content"></div>`);
 
         const postTitle = $(`<h3 class="post-title"></h3>`).text(post.title);
-        const postExcerpt = $(`<p class="post-excerpt"></p>`).text(post.content);
+        const postExcerpt = $(`<p class="post-excerpt"></p>`).text(extractExcerpt(post.content));
 
         const readMoreLink = $(`<a href="/posts/${post.id}" class="read-more">Read More</a>`);
 
@@ -42,4 +42,18 @@ $(document).ready(async function () {
 
     }
   });
+
+  function extractExcerpt(html, limit = 200) {
+    const temp = document.createElement('div');
+    temp.innerHTML = html;
+
+    temp.querySelectorAll('img, video, audio, iframe, embed, object, source').forEach(el => el.remove());
+
+    temp.querySelectorAll('p, div, h1, h2, h3, li, blockquote, pre').forEach(el => {
+      el.insertAdjacentText('afterend', ' ');
+    });
+
+    const text = temp.textContent || temp.innerText || '';
+    return text.length > limit ? text.slice(0, limit).trim() : text.trim();
+  }
 });

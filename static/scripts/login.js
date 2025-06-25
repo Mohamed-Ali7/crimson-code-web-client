@@ -110,13 +110,13 @@ $(document).ready(async function () {
           headers: { 'Authorization': 'Bearer ' + data.accessToken },
           success: (user) => {
 
-            const localStorageUser = {
+            const sessionStorageUser = {
               publicId: user.publicId,
               profileImgUrl: user.profileImgUrl,
               firstName: user.firstName,
               lastName: user.lastName,
             }
-            localStorage.setItem(`user`, JSON.stringify(localStorageUser));
+            sessionStorage.setItem(`user`, JSON.stringify(sessionStorageUser));
           },
           error: function (response) {
             if (response.responseJSON) {

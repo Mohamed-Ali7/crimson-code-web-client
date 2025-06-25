@@ -65,6 +65,7 @@
   border-radius: 12px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   flex: 2;
+  min-width: 16.313rem;
 }
 
 .post-sidebar {
@@ -82,13 +83,13 @@
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 }
 
-#post-form label {
+.post-meta label {
   display: block;
   font-weight: 600;
   margin-bottom: 0.5rem;
 }
 
-#post-form input[type="text"] {
+.post-meta input[type="text"] {
   background-color: #fff;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -98,7 +99,7 @@
   font-size: 1rem;
 }
 
-#post-form input[type="text"]:focus {
+.post-meta input[type="text"]:focus {
   border-color: #0077cc;
   outline: none;
 }
@@ -112,8 +113,7 @@ textarea:focus {
   color: #a5a5a5;
 }
 
-#post-title,
-#post-content {
+#post-title {
   border: none;
   border-radius: 0;
   border-bottom: 2px solid #d6d6d6;
@@ -166,17 +166,19 @@ textarea:focus {
   font-size: 1rem;
 }
 
-#post-content {
-  font-size: 1.3rem;
-  line-height: 1.7;
-  width: 100%;
+.ql-editor {
+  font-size: 1.2rem;
+  line-height: 1.7 !important;
+  width: 100% !important;
   min-height: 18.75rem;
-  margin-top: 1rem;
+  padding: 1.7rem 0 0 0 !important;
+  overflow: hidden;
+  border-bottom: 2px solid #d6d6d6;
+
 }
 
-#post-content::placeholder {
-  font-size: 1.3rem;
-  color: #a5a5a5;
+.ql-editor .ql-code-block-container {
+  padding: 34px 16px 10px 16px !important;
 }
 
 .post-category-group {
@@ -251,7 +253,7 @@ textarea:focus {
 }
 
 #post-title.error,
-#post-content.error,
+.ql-editor.error,
 .error {
   border-color: red;
 }
@@ -373,9 +375,19 @@ body.swal2-shown {
   overflow-y: auto !important;
 }
 
-@media(max-width: 62.5rem) {
+@media(max-width: 65.625rem) {
   .form-layout {
     flex-direction: column;
+  }
+.container {
+    padding: 2rem 3rem;
+  }
+  
+}
+
+@media (max-width: 50rem) {
+  .container {
+    padding: 2rem 1rem;
   }
 }
 
@@ -383,6 +395,15 @@ body.swal2-shown {
 
   .container {
     padding: 2rem 0.3rem;
+  }
+
+  .post-main {
+    padding: 0.8rem;
+    width: 100%;
+  }
+
+  .post-sidebar {
+    padding: 1rem 0.4rem;
   }
 
   .page-title {
@@ -399,26 +420,9 @@ body.swal2-shown {
     font-size: 1.5rem;
   }
 
-  .form-layout {
-    flex-direction: column;
-  }
-
-  .post-main {
-    padding: 0.8rem;
-    ;
-  }
-
-  .post-sidebar {
-    padding: 1rem 0;
-  }
-
   #post-title {
     font-size: 1.7rem;
     font-weight: normal;
-  }
-
-  #post-content {
-    font-size: 1.2rem;
   }
 
   .image-preview {
@@ -429,14 +433,16 @@ body.swal2-shown {
     font-size: 1.5rem;
   }
 
-  #post-content::placeholder {
-    font-size: 1.2rem;
-  }
-
   .submit-section {
     display: flex;
     flex-direction: column;
     gap: 1.2rem;
+    align-items: center;
+  }
+
+  .submit-section button {
+    width: 100%;
+    max-width: 20rem;
   }
 
   .cancel-post-edit-button {

@@ -19,7 +19,7 @@ $(document).ready(async function () {
     }
 
     async function loadCurrentUser() {
-      let currentUser = localStorage.getItem(`user`);
+      let currentUser = sessionStorage.getItem(`user`);
       const accessToken = Cookies.get(`access_token`);
 
       if (currentUser) {
@@ -31,14 +31,14 @@ $(document).ready(async function () {
         url: `${host}/api/users/me`,
         headers: { 'Authorization': 'Bearer ' + accessToken }
       }).then((user) => {
-        const localStorageUser = {
+        const sessionStorageUser = {
           publicId: user.publicId,
           profileImgUrl: user.profileImgUrl,
           firstName: user.firstName,
           lastName: user.lastName,
         }
-        localStorage.setItem(`user`, JSON.stringify(localStorageUser));
-        return localStorageUser;
+        sessionStorage.setItem(`user`, JSON.stringify(sessionStorageUser));
+        return sessionStorageUser;
       }).catch(function (response) {
         if (response.responseJSON) {
           console.error(response.responseJSON.message);
@@ -47,10 +47,6 @@ $(document).ready(async function () {
         }
       });
     }
-
-    $(`.logo`).on(`click`, function () {
-      window.location = `/`;
-    });
 
     async function loadTags() {
       let tags = sessionStorage.getItem(`tags`);
@@ -80,8 +76,12 @@ $(document).ready(async function () {
 
         $(`.profile-details`).data(`user-id`, user.publicId);
         const profilePictureURL = $(`.profile-details .profile-pic img`);
+        const userFullNameWrapper = $(`<span class="user-name-wrapper"></span>`);
         const userFullName = $(`.profile-details .user-name`);
         const downArrow = $(`<i class="fa fa-caret-down"></i>`);
+
+        $(`.profile-details`).append(userFullNameWrapper)
+        userFullNameWrapper.append(userFullName, downArrow);
 
         if (user.profileImgUrl) {
           profilePictureURL.attr(`src`, `${user.profileImgUrl}`);
@@ -98,7 +98,6 @@ $(document).ready(async function () {
 
         userFullName.text(`${user.firstName} ${user.lastName}`);
 
-        userFullName.append(downArrow);
       });
     }
 
@@ -256,11 +255,17 @@ $(document).ready(async function () {
           $(`.profile-dropdown`).hide();
         }
       } else {
-        window.location = `/users/${decodeURIComponent($(this).data(`user-id`))}`;
+        if (!$(this).attr(`data-safety-check`)) {
+          window.location = `/users/${decodeURIComponent($(this).data(`user-id`))}`;
+        }
       }
     });
 
     $(`.view-profile`).on(`click`, function () {
+
+      if ($(this).attr(`data-safety-check`)) {
+        return;
+      }
       currentUserId = $(this).closest(`.user-profile`).find(`.profile-details`).data(`user-id`);
 
       window.location = `/users/${currentUserId}`;
@@ -336,6 +341,9 @@ $(document).ready(async function () {
     $(`.mobile-view-logout-btn`).on(`click`, logout);
 
     function logout() {
+      if (e.target.getAttribute(`data-safety-check`)) {
+        return;
+      }
       const accessToken = Cookies.get(`access_token`);
       const refreshToken = Cookies.get(`refresh_token`);
 
@@ -353,7 +361,7 @@ $(document).ready(async function () {
         success: function (data) {
           Cookies.remove(`access_token`);
           Cookies.remove(`refresh_token`);
-          localStorage.removeItem(`user`);
+          sessionStorage.removeItem(`user`);
 
           window.location = `/login`;
         },

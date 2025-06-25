@@ -17,6 +17,47 @@ $(document).ready(async function () {
     window.location = `/not-found`;
   }
 
+  function validateQuillContent(quill) {
+    const forbidList = ['IMG', 'VIDEO', 'AUDIO', 'IFRAME', 'EMBED', 'OBJECT', 'SOURCE', 'PICTURE'];
+    forbidList.forEach(el => {
+      quill.clipboard.addMatcher(el, (node, delta) => {
+        const Delta = Quill.import('delta')
+        return new Delta().insert('')
+      });
+    });
+
+    quill.root.addEventListener('drop', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }, true);
+
+    quill.root.addEventListener('dragover', function (e) {
+      e.preventDefault();
+    }, true);
+  }
+
+  const quillInitializer = {
+    theme: 'bubble',
+    placeholder: 'Write your comment here...',
+    modules: {
+      syntax: true,
+      toolbar: [
+        [{ header: [1, 2, 3, false] }],
+        [{ 'background': ['#f7ed94', '#b4e6ab', '#f28b82', false] }],
+        ['bold'], ['italic'], ['underline'], ['code-block'],
+        ['strike'], ['blockquote'],
+        [{ list: 'ordered' }], [{ list: 'bullet' }],
+        ['link']
+      ]
+    }
+  }
+
+  const commentQuill = new Quill('#editor', quillInitializer);
+
+  validateQuillContent(commentQuill);
+
+  $(`#editor .ql-editor`).addClass(`comment-textarea`);
+
   let isUserLoggedIn = true;
 
   if (!accessToken) {
@@ -88,7 +129,7 @@ $(document).ready(async function () {
     url: `${host}/api/posts/${postId}`,
     success: function (post) {
       $('.post-title').text(post.title);
-      $('.post-content').text(post.content);
+      $('.post-content').html(post.content);
       const user = post.user;
 
       $('.post-author-name').text(`${user.firstName} ${user.lastName}`).data(`user-id`, user.publicId);
@@ -174,7 +215,10 @@ $(document).ready(async function () {
       scrollbarPadding: false
     }).then((result) => {
       if (result.isConfirmed) {
+
+        $(this).prop(`disabled`, true);
         $(`#loading-spinner`).show();
+
         $.ajax({
           method: `DELETE`,
           url: `${host}/api/posts/${postId}`,
@@ -191,6 +235,7 @@ $(document).ready(async function () {
           },
           complete: function () {
             $(`#loading-spinner`).hide();
+            $(this).prop(`disabled`, false);
           }
         });
       }
@@ -278,7 +323,7 @@ $(document).ready(async function () {
 
     commentAuthorBox.append(commentAuthorAvatar, commentAuthorName, commentDate);
 
-    const commentContent = $('<div class="comment-content"></div>').text(comment.content);
+    const commentContent = $('<div class="comment-content ql-editor"></div>').html(comment.content);
 
     commentMeta.append(commentAuthorBox);
 
@@ -295,11 +340,18 @@ $(document).ready(async function () {
   $(`.comment-form`).on(`submit`, function (e) {
     e.preventDefault();
 
-    const commentInputValue = $(`.comment-textarea`).val().trim();
+    const commentInput = $(`.comment-textarea`);
+    const commentInputValue = $(`.comment-textarea`).html().trim();
 
-    if (!commentInputValue) {
+    if (!commentInputValue || commentInputValue === `<p><br></p>`) {
       return;
     }
+
+    $(`.comment-textarea .ql-code-block-container select.ql-ui`).remove();
+
+    const cleanHtmlContent = DOMPurify.sanitize(commentInput.html().trim(), {
+      FORBID_TAGS: ['script', 'iframe', 'video', 'audio', 'embed', 'object', 'img', 'source']
+    });
 
     $(`.submit-comment`).prop(`disabled`, true);
 
@@ -308,11 +360,11 @@ $(document).ready(async function () {
     $.ajax({
       method: `POST`,
       url: `${host}/api/posts/${postId}/comments`,
-      data: JSON.stringify({ content: commentInputValue }),
+      data: JSON.stringify({ content: cleanHtmlContent }),
       contentType: `application/json`,
       headers: { 'Authorization': 'Bearer ' + accessToken },
       success: function (comment) {
-        $(`.comment-textarea`).val(``);
+        $(`.comment-textarea`).text(``);
         const newComment = createComment(comment, currentUserPublicId);
         $(`.comments-list`).prepend(newComment);
       },
@@ -327,7 +379,7 @@ $(document).ready(async function () {
         $(`.submit-comment`).prop(`disabled`, false);
         $(`#loading-spinner`).hide();
       }
-    })
+    });
 
   });
 
@@ -342,20 +394,15 @@ $(document).ready(async function () {
 
     const currentComment = $(this).closest(`.comment-wrapper`);
     const currentCommentContent = currentComment.find(`.comment-content`);
-    const currentCommentContentText = currentCommentContent.text();
+    const currentCommentContentHTML = currentCommentContent.html();
     currentCommentContent.hide();
     currentComment.find(`.comment-buttons`).addClass(`hide`);
 
     const updateCommentForm = $(`<form class="update-comment-form"></form>`);
-    const updateCommentTextarea = $(`<textarea class="update-comment-textarea"></textarea>`);
+    const updateCommentTextarea = $(`<div id="update-comment-editor"></div>`);
     const updateCommentButtons = $(`<div class="update-comment-buttons"></div>`);
     const saveCommentButton = $(`<button type="button" class="save-comment-button">Save</button>`);
     const cancelEditButton = $(`<button type="button" class="cancel-comment-edit-button">Cancel</button>`);
-
-
-    updateCommentTextarea.height(currentCommentContent.outerHeight(true) + 20);
-
-    updateCommentTextarea.val(currentCommentContentText);
 
     updateCommentButtons.append(saveCommentButton, cancelEditButton);
     updateCommentForm.append(updateCommentTextarea, updateCommentButtons);
@@ -364,6 +411,13 @@ $(document).ready(async function () {
 
     updateCommentTextarea.focus();
 
+    const updateCommentQuill = new Quill('#update-comment-editor', quillInitializer);
+
+    updateCommentQuill.root.innerHTML = currentCommentContentHTML
+
+    $(`#update-comment-editor .ql-editor`).addClass(`update-comment-textarea`);
+
+    validateQuillContent(updateCommentQuill);
   });
 
   $(document).on(`click`, `.cancel-comment-edit-button`, function (e) {
@@ -396,11 +450,17 @@ $(document).ready(async function () {
     e.preventDefault();
 
     const currentUpdateCommentform = $(this).closest(`.update-comment-form`);
-    const newContent = $(`.update-comment-textarea`).val().trim();
+    const updatedCommentContentInput = $(`.update-comment-textarea`);
     const currentComment = $(this).closest(`.comment-wrapper`);
     const currentCommentId = currentComment.data(`comment-id`);
 
-    if (!newContent) {
+    $(`.update-comment-textarea .ql-code-block-container select.ql-ui`).remove();
+
+    const cleanHtmlContent = DOMPurify.sanitize(updatedCommentContentInput.html().trim(), {
+      FORBID_TAGS: ['script', 'iframe', 'video', 'audio', 'embed', 'object', 'img', 'source']
+    });
+
+    if (!cleanHtmlContent) {
       Swal.fire({
         icon: 'warning',
         title: 'Empty Comment!',
@@ -427,7 +487,7 @@ $(document).ready(async function () {
         $.ajax({
           method: `PUT`,
           url: `${host}/api/posts/${postId}/comments/${currentCommentId}`,
-          data: JSON.stringify({ content: newContent }),
+          data: JSON.stringify({ content: cleanHtmlContent }),
           contentType: `application/json`,
           headers: { Authorization: 'Bearer ' + accessToken },
           success: function (newComment) {
@@ -437,7 +497,7 @@ $(document).ready(async function () {
             currentComment.find(`.comment-buttons`).removeClass(`hide`);
             $(`.comment-buttons button`).prop('disabled', false)
 
-            currentComment.find(`.comment-content`).text(newComment.content).show();
+            currentComment.find(`.comment-content`).html(newComment.content).show();
 
           },
           error: function (response) {
@@ -471,7 +531,7 @@ $(document).ready(async function () {
       scrollbarPadding: false
     }).then((result) => {
       if (result.isConfirmed) {
-        $(`.delete-comment-button`).prop(`disabled`, true);
+        $(this).prop(`disabled`, true);
         $(`#loading-spinner`).show();
         $.ajax({
           method: `DELETE`,
@@ -496,13 +556,12 @@ $(document).ready(async function () {
             }
           },
           complete: function () {
-            $(`.delete-comment-button`).prop(`disabled`, false);
+            $(this).prop(`disabled`, false);
             $(`#loading-spinner`).hide();
           }
         });
       }
     });
-
   });
 
   $(document).on(`click`, `.post-author-name`, function () {
@@ -527,6 +586,10 @@ $(document).ready(async function () {
 
 
   $(`.post-image`).on(`click`, function () {
+    window.open($(this).attr('src'), '_blank');
+  });
+
+  $(`.post-content`).on(`click`, `img`, function () {
     window.open($(this).attr('src'), '_blank');
   });
 

@@ -390,8 +390,18 @@ body {
   object-fit: cover;
 }
 
-.profile-details .user-name .fa {
-  margin-left: 0.3rem;
+.profile-details .user-name-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.profile-details .user-name {
+  max-width: 8.75rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .profile-dropdown {
@@ -428,7 +438,7 @@ body {
 }
 
 .profile-dropdown .logout-btn {
- 
+
   background-color: #4b4a4a;
   color: #fffdfd;
 }
@@ -495,7 +505,7 @@ body {
   font-size: 1.2rem;
 }
 
-.footer-social div{
+.footer-social div {
   margin-top: 1rem;
 }
 
@@ -508,14 +518,27 @@ body {
   color: #999;
 }
 
-
-
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
 
   header.navbar {
     padding: 0 1.4rem;
   }
   
+  .navbar-buttons .user-profile {
+    gap: 1.5rem;
+  }
+
+  .profile-details .user-name {
+    max-width: 6rem;
+  }
+
+  .navbar-buttons {
+    padding-left: 1.5rem;
+  }
+}
+
+@media (max-width: 900px) {
+
   .logo {
     margin-left: -1.5rem;
   }
@@ -565,15 +588,9 @@ body {
     display: inline-block;
   }
 
-  .profile-details .user-name {
-    max-width: 6rem;
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
 
-  .user-name .fa {
+
+  .user-name-wrapper .fa {
     display: none;
   }
 

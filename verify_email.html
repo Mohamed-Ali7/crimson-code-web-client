@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Email Verification</title>
   <link rel="icon" href="/static/images/favicon.png" type="image/png">
-  
+
   <link rel="stylesheet" href="/static/styles/common.css" />
   <link rel="stylesheet" href="/static/styles/verify_email.css" />
 
@@ -28,9 +28,9 @@
   </div>
 
   <header class="navbar">
-    <div class="logo">
+    <a href="/" class="logo">
       <img src="/static/images/crimson_code_logo.png">
-    </div>
+    </a>
 
     <i class="fas fa-bars menu-bar"></i>
 
@@ -123,13 +123,13 @@
   </header>
 
   <main class="verify-email-wrapper">
-      <div class="message-container">
-        <div class="verify-failure">
-          <i class="bi bi-x-circle-fill icon-failure"></i>
-          <p>Verification failed. Please try to send a new verification email or contact support.</p>
-        </div>
+    <div class="message-container">
+      <div class="verify-failure">
+        <i class="bi bi-x-circle-fill icon-failure"></i>
+        <p>Verification failed. Please try to send a new verification email or contact support.</p>
       </div>
-      <button class="send-verification-mail-btn">send a verification mail</button>
+    </div>
+    <button class="send-verification-mail-btn">send a verification mail</button>
   </main>
 
   <footer class="site-footer">

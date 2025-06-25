@@ -20,7 +20,7 @@
 
 .sign-up-card h1 {
   font-family: 'Poppins', sans-serif;
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   margin-bottom: 0.6rem;
 }
 
@@ -128,7 +128,7 @@
   text-decoration: underline;
 }
 
-@media (max-width: 26.5rem) {
+@media (max-width: 37.5rem) {
 
   .sign-up-card {
     padding: 1.8rem 2rem;
@@ -139,6 +139,6 @@
   }
 
   .sign-up-card h1{
-    font-size: 1.1rem;
+    font-size: 1.2rem;
   }
 }
