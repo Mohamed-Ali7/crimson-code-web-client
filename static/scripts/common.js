@@ -340,7 +340,7 @@ $(document).ready(async function () {
     $(`.logout-btn`).on(`click`, logout);
     $(`.mobile-view-logout-btn`).on(`click`, logout);
 
-    function logout() {
+    function logout(e) {
       if (e.target.getAttribute(`data-safety-check`)) {
         return;
       }
